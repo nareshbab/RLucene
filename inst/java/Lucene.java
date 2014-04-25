@@ -6,6 +6,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -91,16 +92,16 @@ public class Lucene {
 	
 	public static void addDoc(IndexWriter writer, String[] data) throws IOException {
 		  Document doc = new Document();
-		  doc.add(new StringField("notebook_id", data[0], Field.Store.YES));
-		  doc.add(new TextField("description", data[1], Field.Store.YES));
-		  doc.add(new TextField("created_at", data[2], Field.Store.YES));
-		  doc.add(new TextField("updated_at", data[3], Field.Store.YES));
-		  doc.add(new TextField("content", data[4], Field.Store.YES));
-		  doc.add(new StringField("starcount", data[5], Field.Store.YES));
-		  doc.add(new TextField("avatar_url", data[6], Field.Store.YES));
-		  doc.add(new TextField("user_url", data[7], Field.Store.YES));
-		  doc.add(new TextField("commited_at", data[8], Field.Store.YES));
-		  doc.add(new TextField("user", data[9], Field.Store.YES));
+		  doc.add(new StringField("notebook_id", data[0], Store.YES));
+		  doc.add(new TextField("description", data[1], Store.YES));
+		  doc.add(new TextField("created_at", data[2], Store.YES));
+		  doc.add(new TextField("updated_at", data[3], Store.YES));
+		  doc.add(new TextField("content", data[4], Store.YES));
+		  doc.add(new StringField("starcount", data[5], Store.YES));
+		  doc.add(new TextField("avatar_url", data[6], Store.YES));
+		  doc.add(new TextField("user_url", data[7], Store.YES));
+		  doc.add(new TextField("commited_at", data[8], Store.YES));
+		  doc.add(new TextField("user", data[9], Store.YES));
 		  writer.addDocument(doc);
 	}
 }
