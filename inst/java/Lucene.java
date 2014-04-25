@@ -81,7 +81,7 @@ public class Lucene {
 		for (ScoreDoc sd : hits.scoreDocs) {
         	Document doc = searcher.doc(sd.doc);
 			String frag = highlighter.getBestFragment(fq, reader, sd.doc, "content", 2000000000);
-			json.put(doc.get("id"), frag);
+			json.put(doc.get("notebook_id"), frag);
         }
 		return json.toString();
 	}
