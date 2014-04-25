@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.IOException;
 import org.apache.lucene.analysis.Analyzer;
@@ -62,7 +61,7 @@ public class Lucene {
       			System.out.println("Unmap not supported on this JVM, continuing on without setting unmap\n" + e);
     		}
 		writeIndex = FSDirectory.open(new File(path[1]));
-		reader = DirectoryReader.open(dirIndex);
+		reader = DirectoryReader.open(index);
 		searcher = new IndexSearcher(reader);
 		config = new IndexWriterConfig(version, SA);
 		writer = new IndexWriter(writeIndex, config);
@@ -70,9 +69,9 @@ public class Lucene {
 		fragListBuilder = new SimpleFragListBuilder();
 		fragmentsBuilder = new SimpleFragmentsBuilder(pretag, posttag);	
 		highlighter = new FastVectorHighlighter(true, true, fragListBuilder, fragmentsBuilder);
-		
+
 	}
-	
+
 	public String getResults(String query) throws Exception{
 		Query q = multiparser.parse(query);
 		TopDocs hits = searcher.search(q,1000);
@@ -85,19 +84,19 @@ public class Lucene {
         }
 		return json.toString();
 	}
-	
+
 	public void indexing(String[] data) throws IOException {
 		Document doc = new Document();
 		doc.add(new Field("notebook_id", data[0], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
 		doc.add(new Field("description", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
-		doc.add(new Field("created_at", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
-		doc.add(new Field("updated_at", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
-		doc.add(new Field("content", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
-		doc.add(new Field("starcount", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
-		doc.add(new Field("avatar_url", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
-		doc.add(new Field("user_url", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
-		doc.add(new Field("commited_at", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
-		doc.add(new Field("user", data[1], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
+		doc.add(new Field("created_at", data[2], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
+		doc.add(new Field("updated_at", data[3], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
+		doc.add(new Field("content", data[4], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
+		doc.add(new Field("starcount", data[5], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
+		doc.add(new Field("avatar_url", data[6], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
+		doc.add(new Field("user_url", data[7], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
+		doc.add(new Field("commited_at", data[8], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
+		doc.add(new Field("user", data[9], Store.YES, Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
 		writer.addDocument(doc);
 		writer.close();
 	}
