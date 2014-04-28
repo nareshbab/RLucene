@@ -1,5 +1,4 @@
 .onLoad <- function(libname, pkgname) {
   .jpackage(pkgname, lib.loc=libname)
-   path <- .jarray(c("/vagrant/work/nanda_indexes","/vagrant/work/new"))
-  .session$lo <- .jnew("Lucene", path)
+  .session$lo <- .jnew("Lucene", "/vagrant/work/indexes4/")
 }
