@@ -1,14 +1,28 @@
 .session <- new.env(parent=emptyenv())
 
-lucene.search <- function(query){
+create.lucene.index <- function(path) {
+  .session$lo <- .jnew("Lucene", path)
+}
+
+index.search <- function(query){
   res <- .jcall(.session$lo, "S", "getResults", query)
   return(res)
 }
 
-lucene.indexing <- function(data, path) {
+index.document <- function(path, data) {
   metadata <- .jarray(c(data$notebook_id, data$description, data$created_at, data$updated_at, data$content, data$starcount, data$avatar_url, data$user_url, data$commited_at, data$user))
   .jcall(.session$lo, "V", "indexing", path, metadata)
-  .session$lo <- .jnew("Lucene", "/vagrant/work/indexes4/")
 }
+
+delete.lucene.index <- function(path, field, value, ...) {
+  if (missing(field) && missing(value)) {
+    .jcall(.session$lo, "V", "deleteindexes", path)
+  }	else {
+    data <- .jarray(c(field, value))
+	.jcall(.session$lo, "V", "deleteindexes", path, data)
+  }
+}
+
+
 
 
