@@ -11,6 +11,7 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.core.StopFilter;
+import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.pattern.PatternReplaceCharFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
@@ -52,14 +53,13 @@ import org.json.JSONObject;
 
 @SuppressWarnings("deprecation")
 public class Lucene {
-	//public Analyzer SA;
 	public CustomAnalyzer  analyzer;
 	public Version version;
 	public IndexReader reader;
 	public FragListBuilder fragListBuilder;
 	public FragmentsBuilder fragmentsBuilder;
 	public FastVectorHighlighter highlighter;
-	public IndexSearcher searcher;
+	//public IndexSearcher searcher;
 	public MultiFieldQueryParser multiparser;
 	String[] fields = {"notebook_id","description","created_at","updated_at","content","starcount","avatar_url","user_url","commited_at","user"};
 	public static String[] pretag = {"<b style='background:yellow'>"}; 
@@ -70,19 +70,11 @@ public class Lucene {
 	public IndexWriter writer;
 
 	public static void main (String[] args) throws Exception { 
-		//Lucene lucene = new Lucene("F:/vagrant_workspace/open");
-		//for (int i=0; i< 50; i++){
-			//String[] data = {"26", "notebook", "1995-12-31T23:59:59.999Z", "1995-12-31T23:59:59.999Z", "[{\"filename\":\"part1.R\",\"content\":\"\"}]", "1", "google.com", "google.com", "1995-12-31T23:59:59.999Z", "naresh"};	
-			//lucene.indexing("F:/vagrant_workspace/open", data);
-		//}*/
-		//System.out.println(lucene.getResults("26"));
-
-
 	}
 
 	public Lucene(String path) throws Exception{ 
 		version = Version.LUCENE_47;
-		analyzer = new CustomAnalyzer(version);
+		analyzer = new CustomAnalyzer(version, "whitespace");
 		File Dir = new File(path);
 		if(!Dir.exists()) {
 			Dir.mkdir();
@@ -219,26 +211,26 @@ public class Lucene {
 
 	private final class CustomAnalyzer extends Analyzer {
 		private Version matchVersion;
-		public CustomAnalyzer(Version matchVersion) {
-			this.matchVersion = matchVersion;
+		private String name;
+		public CustomAnalyzer(Version matchVersion, String name) {
+			this.matchVersion = matchVersion; 
+			this.name = name;
 		}
 
 		protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-			final Tokenizer source = new StandardTokenizer(matchVersion, reader);
-			TokenStream sink = new StandardFilter(matchVersion, source);
-			sink = new LowerCaseFilter(matchVersion, sink);
-			sink = new StopFilter(matchVersion, sink, StopAnalyzer.ENGLISH_STOP_WORDS_SET);
-			return new TokenStreamComponents(source, sink);
+			if (name == "standard"){
+				final Tokenizer source = new StandardTokenizer(matchVersion, reader);
+				TokenStream sink = new StandardFilter(matchVersion, source);
+				sink = new LowerCaseFilter(matchVersion, sink);
+				sink = new StopFilter(matchVersion, sink, StopAnalyzer.ENGLISH_STOP_WORDS_SET);
+				return new TokenStreamComponents(source, sink);
+			} else {
+				final Tokenizer source = new WhitespaceTokenizer(matchVersion, reader);
+				TokenStream sink = new StandardFilter(matchVersion, source);
+				sink = new LowerCaseFilter(matchVersion, sink);
+				sink = new StopFilter(matchVersion, sink, StopAnalyzer.ENGLISH_STOP_WORDS_SET);
+				return new TokenStreamComponents(source, sink);
+			}
 		}
-		/*
-		  protected Reader initReader(String fieldName, Reader reader) {
-		        //return your CharFilter-wrapped reader here
-			  Pattern p = Pattern.compile("\\n");
-			  String r = " ";
-			  CharFilter charfilter = new PatternReplaceCharFilter(p, r, reader);
-			  charfilter.read();
-			  return new Reader();
-		    }*/
 	}
-
 }
