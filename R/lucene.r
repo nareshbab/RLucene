@@ -4,6 +4,10 @@ create.lucene.index <- function(path) {
   .session$lo <- .jnew("Lucene", path)
 }
 
+load.lucene.index <- function(path) {
+  .session$lo <- .jnew("Lucene", path)
+}
+
 index.search <- function(query){
   res <- .jcall(.session$lo, "S", "getResults", query)
   return(res)
