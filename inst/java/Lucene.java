@@ -2,7 +2,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharFilter;
@@ -12,9 +15,12 @@ import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
+import org.apache.lucene.analysis.miscellaneous.WordDelimiterFilter;
+import org.apache.lucene.analysis.miscellaneous.WordDelimiterIterator;
 import org.apache.lucene.analysis.pattern.PatternReplaceCharFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
@@ -70,11 +76,19 @@ public class Lucene {
 	public IndexWriter writer;
 
 	public static void main (String[] args) throws Exception { 
+		Lucene lucene = new Lucene("F:/vagrant_workspace/open");
+		//for (int i=0; i< 50; i++){
+		//String[] data = {"26", "notebook", "1995-12-31T23:59:59.999Z", "1995-12-31T23:59:59.999Z", "\nfoo \rnaresh", "1", "google.com", "google.com", "1995-12-31T23:59:59.999Z", "naresh"};	
+		//lucene.indexing("F:/vagrant_workspace/open", data);
+		//}*/
+		//System.out.println(lucene.getResults("naresh"));
+
+
 	}
 
 	public Lucene(String path) throws Exception{ 
 		version = Version.LUCENE_47;
-		analyzer = new CustomAnalyzer(version, "whitespace");
+		analyzer = new CustomAnalyzer(version, "standard");
 		File Dir = new File(path);
 		if(!Dir.exists()) {
 			Dir.mkdir();
@@ -212,6 +226,15 @@ public class Lucene {
 	private final class CustomAnalyzer extends Analyzer {
 		private Version matchVersion;
 		private String name;
+		private Pattern pattern1 = Pattern.compile("\n");
+		private Pattern pattern2 = Pattern.compile("\r");
+		private String replacement = " ";
+		final List<String> DelimWords = Arrays.asList(
+				"!", "@", "#", "$", "%", "^", "&", "*", "(",
+				")", "_", "+", "[", "]", "{",
+				"}", ":", "'", ">", "<", "?",
+				"/");
+		
 		public CustomAnalyzer(Version matchVersion, String name) {
 			this.matchVersion = matchVersion; 
 			this.name = name;
@@ -227,10 +250,19 @@ public class Lucene {
 			} else {
 				final Tokenizer source = new WhitespaceTokenizer(matchVersion, reader);
 				TokenStream sink = new StandardFilter(matchVersion, source);
+				final CharArraySet DelimSet = new CharArraySet(matchVersion, DelimWords, false);
+				sink = new WordDelimiterFilter(sink, 1, DelimSet);
 				sink = new LowerCaseFilter(matchVersion, sink);
 				sink = new StopFilter(matchVersion, sink, StopAnalyzer.ENGLISH_STOP_WORDS_SET);
 				return new TokenStreamComponents(source, sink);
 			}
 		}
+
+		protected Reader initReader(String fieldName, Reader reader) {
+	        Reader p1 = new PatternReplaceCharFilter(pattern1, replacement, reader);
+	        return new PatternReplaceCharFilter(pattern2, replacement, p1);
+	    }
+		
 	}
+
 }
