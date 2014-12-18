@@ -76,12 +76,12 @@ public class Lucene {
 	public IndexWriter writer;
 
 	public static void main (String[] args) throws Exception { 
-		Lucene lucene = new Lucene("F:/vagrant_workspace/open");
+		//Lucene lucene = new Lucene("F:/vagrant_workspace/test");
 		//for (int i=0; i< 50; i++){
 		//String[] data = {"26", "notebook", "1995-12-31T23:59:59.999Z", "1995-12-31T23:59:59.999Z", "\nfoo \rnaresh", "1", "google.com", "google.com", "1995-12-31T23:59:59.999Z", "naresh"};	
 		//lucene.indexing("F:/vagrant_workspace/open", data);
 		//}*/
-		//System.out.println(lucene.getResults("naresh"));
+		//System.out.println(lucene.getResults("id100"));
 
 
 	}
@@ -109,6 +109,7 @@ public class Lucene {
 			IndexReader r = s.getIndexReader();
 			Query q = multiparser.parse(query);
 			TopDocs hits = s.search(q,1000);
+			System.out.println(reader.maxDoc());
 			System.out.println(hits.totalHits);
 			FieldQuery fq = highlighter.getFieldQuery(q);
 			for (ScoreDoc sd : hits.scoreDocs) {
